@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Wear</string>
+    <string name="message">Watch face tapped</string>
+    <string name="my_analog_name">My Analog</string>
+    <string name="my_digital_name">Sunshine</string>
+    <string name="title_activity_wear">WearActivity</string>
+    <string name="hello_round">Hello Round World!</string>
+    <string name="hello_square">Hello Square World!</string>
+</resources>
