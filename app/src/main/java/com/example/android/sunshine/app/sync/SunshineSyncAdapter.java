@@ -24,6 +24,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.text.format.Time;
@@ -36,6 +37,7 @@ import com.example.android.sunshine.app.R;
 import com.example.android.sunshine.app.Utility;
 import com.example.android.sunshine.app.data.WeatherContract;
 import com.example.android.sunshine.app.muzei.WeatherMuzeiSource;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.MessageApi;
 import com.google.android.gms.wearable.Node;
@@ -510,7 +512,13 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             Log.d("TEST",high+"");
             Log.d("TEST",low+"");
             byte[] rawData = config.toByteArray();
-            Wearable.MessageApi.sendMessage(MainActivity.mGoogleApiClient, "DATA", PATH_WITH_FEATURE, rawData);
+            Wearable.MessageApi.sendMessage(MainActivity.mGoogleApiClient, MainActivity.mNode.getId(), PATH_WITH_FEATURE, rawData)
+            .setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
+                @Override
+                public void onResult(@NonNull MessageApi.SendMessageResult sendMessageResult) {
+                    Log.d("TEST", sendMessageResult.getStatus().getStatusMessage());
+                }
+            });
         }
         cursor.close();
 

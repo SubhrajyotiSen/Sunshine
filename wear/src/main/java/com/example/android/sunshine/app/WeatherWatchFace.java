@@ -115,6 +115,10 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         float lineHeight;
         float bitmapOffset;
 
+        int wID;
+        double wMax;
+        double wMin;
+
         /**
          * Whether the display supports fewer bits for each color in ambient mode. When true, we
          * disable anti-aliasing in ambient mode.
@@ -152,6 +156,11 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mDate = new Date();
             mDateFormat = DateFormat.getDateFormat(WeatherWatchFace.this);
             mDateFormat.setCalendar(mCalendar);
+
+            wID = 800;
+            wMax = 32;
+            wMin = 21;
+
         }
 
         @Override
@@ -378,5 +387,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 mUpdateTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, delayMs);
             }
         }
+
+
     }
 }

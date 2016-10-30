@@ -38,6 +38,9 @@ import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 
 public class MainActivity extends AppCompatActivity implements ForecastFragment.Callback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
     private String mLocation;
 
     public static GoogleApiClient mGoogleApiClient;
+    public static Node mNode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -213,6 +217,17 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.d(LOG_TAG, "GoogleAPI connected");
+        Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>() {
+            @Override
+            public void onResult(@NonNull NodeApi.GetConnectedNodesResult getConnectedNodesResult) {
+                for (Node node : getConnectedNodesResult.getNodes()){
+                    if (node!=null &&  node.isNearby()){
+                        mNode = node;
+                        Log.d("TEST","Connected to "+ node.getDisplayName());
+                    }
+                }
+            }
+        });
     }
 
     @Override
