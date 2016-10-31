@@ -31,13 +31,23 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
 import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.MessageApi;
+import com.google.android.gms.wearable.MessageEvent;
+import com.google.android.gms.wearable.Wearable;
 
 import java.lang.ref.WeakReference;
 import java.util.Calendar;
@@ -89,7 +99,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         }
     }
 
-    private class Engine extends CanvasWatchFaceService.Engine {
+    private class Engine extends CanvasWatchFaceService.Engine implements MessageApi.MessageListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
         final Handler mUpdateTimeHandler = new EngineHandler(this);
         boolean mRegisteredTimeZoneReceiver = false;
         Paint mBackgroundPaint;
@@ -118,6 +128,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         int wID;
         double wMax;
         double wMin;
+
+        GoogleApiClient mGoogleApiClient;
 
         /**
          * Whether the display supports fewer bits for each color in ambient mode. When true, we
@@ -160,6 +172,13 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             wID = 800;
             wMax = 32;
             wMin = 21;
+
+            mGoogleApiClient = new GoogleApiClient.Builder(getApplicationContext())
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(Wearable.API)
+                    .build();
+            mGoogleApiClient.connect();
 
         }
 
@@ -389,5 +408,37 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         }
 
 
+        @Override
+        public void onConnected(@Nullable Bundle bundle) {
+            Log.d("HAHAHAH","Connected");
+            Wearable.MessageApi.addListener(mGoogleApiClient, this);
+        }
+
+        @Override
+        public void onConnectionSuspended(int i) {
+
+        }
+
+        @Override
+        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+        }
+
+        @Override
+        public void onMessageReceived(MessageEvent messageEvent) {
+            if (messageEvent.getPath().equals("/weather")){
+                byte[] rawData = messageEvent.getData();
+                // It's allowed that the message carries only some of the keys used in the config DataItem
+                // and skips the ones that we don't want to change.
+                DataMap dataMap = DataMap.fromByteArray(rawData);
+
+                int id = dataMap.getInt("0");
+                double max = dataMap.getDouble("1");
+                double min = dataMap.getDouble("2");
+                Log.d("WEAR",id+"");
+                Log.d("WEAR",max+"");
+                Log.d("WEAR",min+"");
+            }
+        }
     }
 }
