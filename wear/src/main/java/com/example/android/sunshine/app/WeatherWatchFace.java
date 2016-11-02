@@ -36,7 +36,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
@@ -109,10 +108,12 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
         Paint mAmPmTextPaint;
         Paint mDateTextPaint;
         Paint mWeatherBitmapPaint;
+        Paint mMaxTempPaint;
+        Paint mMinTempPaint;
         boolean mAmbient;
         Calendar mCalendar;
         Date mDate;
-        java.text.DateFormat mDateFormat;
+        String mDateString;
         final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -163,11 +164,12 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mMinuetTextPaint = createTextPaint(ContextCompat.getColor(getApplicationContext(), R.color.text));
             mAmPmTextPaint = createTextPaint(ContextCompat.getColor(getApplicationContext(), R.color.text));
             mDateTextPaint = createTextPaint(ContextCompat.getColor(getApplicationContext(), R.color.text));
+            mMaxTempPaint = createTextPaint(ContextCompat.getColor(getApplicationContext(), R.color.text));
+            mMinTempPaint = createTextPaint(ContextCompat.getColor(getApplicationContext(), R.color.text));
             mCalendar = Calendar.getInstance();
 
             mDate = new Date();
-            mDateFormat = DateFormat.getDateFormat(WeatherWatchFace.this);
-            mDateFormat.setCalendar(mCalendar);
+            mDateString = java.text.DateFormat.getDateInstance().format(mDate);
 
             wID = 800;
             wMax = 32;
@@ -361,7 +363,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                     canvas.drawText(":".concat(String.valueOf(second)), x, mYOffset, mSecondTextPaint);
             }
 
-            canvas.drawText(mDateFormat.format(mDate), mXOffset + mHourPainText.measureText("1"),
+            canvas.drawText(mDateString, mXOffset + mHourPainText.measureText("1"),
                     mYOffset + lineHeight, mDateTextPaint);
 
             if (!isInAmbientMode()) {
