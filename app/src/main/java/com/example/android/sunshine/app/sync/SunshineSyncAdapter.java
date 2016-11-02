@@ -512,13 +512,14 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
             Log.d("TEST",high+"");
             Log.d("TEST",low+"");
             byte[] rawData = config.toByteArray();
-            Wearable.MessageApi.sendMessage(MainActivity.mGoogleApiClient, MainActivity.mNode.getId(), PATH_WITH_FEATURE, rawData)
-            .setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
-                @Override
-                public void onResult(@NonNull MessageApi.SendMessageResult sendMessageResult) {
-                    Log.d("TEST", sendMessageResult.getStatus().getStatusMessage());
-                }
-            });
+            if (MainActivity.mNode.getId()!=null)
+                Wearable.MessageApi.sendMessage(MainActivity.mGoogleApiClient, MainActivity.mNode.getId(), PATH_WITH_FEATURE, rawData)
+                .setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
+                    @Override
+                    public void onResult(@NonNull MessageApi.SendMessageResult sendMessageResult) {
+                        Log.d("TEST", sendMessageResult.getStatus().getStatusMessage());
+                    }
+                });
         }
         cursor.close();
 

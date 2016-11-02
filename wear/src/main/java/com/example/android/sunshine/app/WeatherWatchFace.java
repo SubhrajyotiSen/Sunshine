@@ -365,10 +365,10 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                     mYOffset + lineHeight, mDateTextPaint);
 
             if (!isInAmbientMode()) {
-
+                int drawableID = WatchFaceUtil.getResource(wID);
                 Bitmap icon = BitmapFactory.decodeResource(getApplicationContext().getResources(),
-                        R.drawable.ic_cloudy);
-                canvas.drawBitmap(icon, bitmapOffset, 200, null);
+                        drawableID);
+                canvas.drawBitmap(Bitmap.createScaledBitmap(icon, 70, 70, false), bitmapOffset, 200, null);
             }
 
 
@@ -432,13 +432,14 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 // and skips the ones that we don't want to change.
                 DataMap dataMap = DataMap.fromByteArray(rawData);
 
-                int id = dataMap.getInt("0");
-                double max = dataMap.getDouble("1");
-                double min = dataMap.getDouble("2");
-                Log.d("WEAR",id+"");
-                Log.d("WEAR",max+"");
-                Log.d("WEAR",min+"");
+                wID = dataMap.getInt("0");
+                wMax = dataMap.getDouble("1");
+                wMin = dataMap.getDouble("2");
+                Log.d("WEAR",wID+"");
+                Log.d("WEAR",wMax+"");
+                Log.d("WEAR",wMin+"");
             }
+            invalidate();
         }
     }
 }
