@@ -10,6 +10,8 @@
     <dimen name="digital_x_offset">25dp</dimen>
     <dimen name="digital_x_offset_round">35dp</dimen>
     <dimen name="digital_y_offset">80dp</dimen>
-    <dimen name="time_size">15sp</dimen>
-    <dimen name="date_size">20sp</dimen>
+    <dimen name="max_temp_size">25sp</dimen>
+    <dimen name="max_temp_size_round">30sp</dimen>
+    <dimen name="min_temp_size">22sp</dimen>
+    <dimen name="min_temp_size_round">27sp</dimen>
 </resources>

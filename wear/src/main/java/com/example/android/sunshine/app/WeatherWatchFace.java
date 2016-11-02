@@ -54,23 +54,13 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Digital watch face with seconds. In ambient mode, the seconds aren't displayed. On devices with
- * low-bit ambient mode, the text is drawn without anti-aliasing in ambient mode.
- */
+
 public class WeatherWatchFace extends CanvasWatchFaceService {
     private static final Typeface NORMAL_TYPEFACE =
             Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
 
-    /**
-     * Update rate in milliseconds for interactive mode. We update once a second since seconds are
-     * displayed in interactive mode.
-     */
     private static final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.SECONDS.toMillis(1);
 
-    /**
-     * Handler message id for updating the time periodically in interactive mode.
-     */
     private static final int MSG_UPDATE_TIME = 0;
 
     @Override
@@ -132,10 +122,6 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
         GoogleApiClient mGoogleApiClient;
 
-        /**
-         * Whether the display supports fewer bits for each color in ambient mode. When true, we
-         * disable anti-aliasing in ambient mode.
-         */
         boolean mLowBitAmbient;
 
         @Override
@@ -159,6 +145,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             mSecondTextPaint = new Paint();
             mAmPmTextPaint = new Paint();
             mWeatherBitmapPaint = new Paint();
+            mMaxTempPaint = new Paint();
+            mMinTempPaint = new Paint();
             mHourPainText = createTextPaint(ContextCompat.getColor(getApplicationContext(), R.color.text));
             mSecondTextPaint = createTextPaint(ContextCompat.getColor(getApplicationContext(), R.color.text));
             mMinuetTextPaint = createTextPaint(ContextCompat.getColor(getApplicationContext(), R.color.text));
@@ -249,14 +237,20 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                     ? R.dimen.digital_text_ampm_size_round : R.dimen.digital_text_ampm_size);
             float dateSize = resources.getDimension(isRound
                     ? R.dimen.digital_text_date_size_round : R.dimen.digital_text_date_size);
+            float maxTempSize = resources.getDimension(isRound
+                    ? R.dimen.max_temp_size_round : R.dimen.max_temp_size);
+            float minTempSize = resources.getDimension(isRound
+                    ? R.dimen.min_temp_size_round : R.dimen.min_temp_size);
             lineHeight = resources.getDimension(R.dimen.digital_line_height);
-            bitmapOffset = isRound ? 50 : 40;
+            bitmapOffset = isRound ? 45 : 35;
 
             mHourPainText.setTextSize(textSize);
             mMinuetTextPaint.setTextSize(textSize);
             mSecondTextPaint.setTextSize(textSize);
             mAmPmTextPaint.setTextSize(ampmSize);
             mDateTextPaint.setTextSize(dateSize);
+            mMinTempPaint.setTextSize(minTempSize);
+            mMaxTempPaint.setTextSize(maxTempSize);
         }
 
         @Override
@@ -282,6 +276,8 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                     mSecondTextPaint.setAntiAlias(!inAmbientMode);
                     mAmPmTextPaint.setAntiAlias(!inAmbientMode);
                     mDateTextPaint.setAntiAlias(!isInAmbientMode());
+                    mMaxTempPaint.setAntiAlias(!isInAmbientMode());
+                    mMinTempPaint.setAntiAlias(!isInAmbientMode());
                 }
                 invalidate();
             }
@@ -370,7 +366,9 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
                 int drawableID = WatchFaceUtil.getResource(wID);
                 Bitmap icon = BitmapFactory.decodeResource(getApplicationContext().getResources(),
                         drawableID);
-                canvas.drawBitmap(Bitmap.createScaledBitmap(icon, 70, 70, false), bitmapOffset, 200, null);
+                canvas.drawBitmap(Bitmap.createScaledBitmap(icon, 70, 70, false), bitmapOffset, 180, null);
+                canvas.drawText(String.valueOf(Math.round(wMax)).concat("°"),bitmapOffset + 80, 225, mMaxTempPaint);
+                canvas.drawText(String.valueOf(Math.round(wMin)).concat("°"),bitmapOffset + 80 + mMaxTempPaint.measureText("999"), 225, mMinTempPaint);
             }
 
 
@@ -412,7 +410,6 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
         @Override
         public void onConnected(@Nullable Bundle bundle) {
-            Log.d("HAHAHAH","Connected");
             Wearable.MessageApi.addListener(mGoogleApiClient, this);
         }
 
