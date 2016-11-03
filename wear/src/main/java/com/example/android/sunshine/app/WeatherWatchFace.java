@@ -287,10 +287,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             updateTimer();
         }
 
-        /**
-         * Captures tap event (and tap type) and toggles the background color if the user finishes
-         * a tap.
-         */
+
         @Override
         public void onTapCommand(int tapType, int x, int y, long eventTime) {
             switch (tapType) {
@@ -364,9 +361,11 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
             if (!isInAmbientMode()) {
                 int drawableID = WatchFaceUtil.getResource(wID);
-                Bitmap icon = BitmapFactory.decodeResource(getApplicationContext().getResources(),
-                        drawableID);
-                canvas.drawBitmap(Bitmap.createScaledBitmap(icon, 70, 70, false), bitmapOffset, 180, null);
+                if (drawableID != -1) {
+                    Bitmap icon = BitmapFactory.decodeResource(getApplicationContext().getResources(),
+                            drawableID);
+                    canvas.drawBitmap(Bitmap.createScaledBitmap(icon, 70, 70, false), bitmapOffset, 180, null);
+                }
                 canvas.drawText(String.valueOf(Math.round(wMax)).concat("°"),bitmapOffset + 80, 225, mMaxTempPaint);
                 canvas.drawText(String.valueOf(Math.round(wMin)).concat("°"),bitmapOffset + 80 + mMaxTempPaint.measureText("999"), 225, mMinTempPaint);
             }
@@ -375,10 +374,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
         }
 
-        /**
-         * Starts the {@link #mUpdateTimeHandler} timer if it should be running and isn't currently
-         * or stops it if it shouldn't be running but currently is.
-         */
+
         private void updateTimer() {
             mUpdateTimeHandler.removeMessages(MSG_UPDATE_TIME);
             if (shouldTimerBeRunning()) {
@@ -386,17 +382,11 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
             }
         }
 
-        /**
-         * Returns whether the {@link #mUpdateTimeHandler} timer should be running. The timer should
-         * only run when we're visible and in interactive mode.
-         */
+
         private boolean shouldTimerBeRunning() {
             return isVisible() && !isInAmbientMode();
         }
 
-        /**
-         * Handle updating the time periodically in interactive mode.
-         */
         private void handleUpdateTimeMessage() {
             invalidate();
             if (shouldTimerBeRunning()) {

@@ -4,9 +4,9 @@ package com.example.android.sunshine.app;
  * Created by subhrajyoti on 2/11/16.
  */
 
-public class WatchFaceUtil {
+class WatchFaceUtil {
 
-    public static int getResource(int weatherId){
+    static int getResource(int weatherId){
             // Based on weather code data found at:
             // http://bugs.openweathermap.org/projects/api/wiki/Weather_Condition_Codes
             if (weatherId >= 200 && weatherId <= 232) {
