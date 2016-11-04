@@ -63,6 +63,9 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
     private static final int MSG_UPDATE_TIME = 0;
 
+    public static String WEATHER_DATA_PATH = "/weather";
+
+
     @Override
     public Engine onCreateEngine() {
         return new Engine();
@@ -195,9 +198,11 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
                 // Update time zone in case it changed while we weren't visible.
                 mCalendar.setTimeZone(TimeZone.getDefault());
+                mGoogleApiClient.connect();
                 invalidate();
             } else {
                 unregisterReceiver();
+                mGoogleApiClient.disconnect();
             }
 
             // Whether the timer should be running depends on whether we're visible (as well as
@@ -415,7 +420,7 @@ public class WeatherWatchFace extends CanvasWatchFaceService {
 
         @Override
         public void onMessageReceived(MessageEvent messageEvent) {
-            if (messageEvent.getPath().equals("/weather")){
+            if (messageEvent.getPath().equals(WEATHER_DATA_PATH)){
                 byte[] rawData = messageEvent.getData();
                 // It's allowed that the message carries only some of the keys used in the config DataItem
                 // and skips the ones that we don't want to change.
